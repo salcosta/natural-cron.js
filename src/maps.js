@@ -37,6 +37,12 @@ var regexString = {
             "^(minutes|minute|mins|min)$"
         ]
     },
+    second : {
+        "regextest" : "(seconds|second|secs|sec)",
+        "regexexec" : [
+            "^(seconds|second|secs|sec)$"
+        ]
+    },
     hour : {
         "regextest" : "(hour|hrs|hours)",
         "regexexec" : [
@@ -66,7 +72,7 @@ var regexString = {
         "regextest" : "(to|through|ending|end|and)" ,
     },
     tokenising : {
-        "regexexec" : "(hour|hrs|hours)|(minutes|minute|mins|min)|((months|month)|(((january|february|march|april|may|june|july|august|september|october|november|december|JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEPT|OCT|NOV|DEC)( ?and)?,? ?)+))|[0-9]+(th|nd|rd|st)|(([0-9]+:)?[0-9]+( +)?(AM|PM))|([0-9]+:[0-9]+)|(noon|midnight)|((days|day)|(((monday|tuesday|wednesday|thursday|friday|saturday|sunday|WEEKEND|MON|TUE|WED|THU|FRI|SAT|SUN)( ?and)?,? ?)+))|(([0-9]{4}[0-9]*(( ?and)?,? ?))+)|([0-9]+)|(to|through|ending|end|and)|(between|starting|start)"
+        "regexexec" : "(hour|hrs|hours)|(minutes|minute|mins|min)|(seconds|second|secs|sec)|((months|month)|(((january|february|march|april|may|june|july|august|september|october|november|december|JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEPT|OCT|NOV|DEC)( ?and)?,? ?)+))|[0-9]+(th|nd|rd|st)|(([0-9]+:)?[0-9]+( +)?(AM|PM))|([0-9]+:[0-9]+)|(noon|midnight)|((days|day)|(((monday|tuesday|wednesday|thursday|friday|saturday|sunday|WEEKEND|MON|TUE|WED|THU|FRI|SAT|SUN)( ?and)?,? ?)+))|(([0-9]{4}[0-9]*(( ?and)?,? ?))+)|([0-9]+)|(to|through|ending|end|and)|(between|starting|start)"
     }
 }
 
@@ -75,10 +81,12 @@ var defaultFlags = {
     "isRangeForMonth" : false,
     "isRangeForYear" : false,
     "isRangeForHour" : false,
-    "isRangeForMin" : false
+    "isRangeForMin" : false,
+    "isRangeForSec" : false,
 };
 
 var defaultResultCron = {
+    "sec" : "*",
     "min" : "*",
     "hour" : "*",
     "day_of_month" : "*",
@@ -92,10 +100,12 @@ var flags = {
     "isRangeForMonth" : defaultFlags.isRangeForMonth,
     "isRangeForYear" : defaultFlags.isRangeForYear,
     "isRangeForHour" : defaultFlags.isRangeForHour,
-    "isRangeForMin" : defaultFlags.isRangeForMin
+    "isRangeForMin" : defaultFlags.isRangeForMin,
+    "isRangeForSec" : defaultFlags.isRangeForSec,
 };
 
 var resultCron = {
+    "sec" : defaultResultCron.sec,
     "min" : defaultResultCron.min,
     "hour" : defaultResultCron.hour,
     "day_of_month" : defaultResultCron.day_of_month,

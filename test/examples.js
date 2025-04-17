@@ -75,5 +75,10 @@ var exampleData = [
         "srno" : 15,
         "inputPhrase" : "every 3rd day at 2:55 am from January to August in 2019 and 2020",
         "desiredOutput" : "55 2 3 JAN-AUG ? 2019,2020"
+    },
+    {
+        "srno" : 15,
+        "inputPhrase" : "every 15 seconds",
+        "desiredOutput" : "0/15 * * * * ? *"
     }
 ];

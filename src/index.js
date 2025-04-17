@@ -1,67 +1,83 @@
-'use strict';
-const regexString = require('./maps').regexString;
-var defaultFlags = require('./maps').defaultFlags;
-var defaultResultCron = require('./maps').defaultResultCron;
-var flags = require('./maps').flags;
-var resultCron = require('./maps').resultCron;
+"use strict";
+const regexString = require("./maps").regexString;
+var defaultFlags = require("./maps").defaultFlags;
+var defaultResultCron = require("./maps").defaultResultCron;
+var flags = require("./maps").flags;
+var resultCron = require("./maps").resultCron;
 
-const tokenizeInput  = require('./tokens').tokenizeInput;
-const getClockTime  = require('./states/clocktime').getClockTime;
-const getDay  = require('./states/day').getDay;
-const getFrequencyOnly  = require('./states/frequency').getFrequencyOnly;
-const getFrequencyWith  = require('./states/frequency').getFrequencyWith;
-const getHour  = require('./states/hour').getHour;
-const getMonth  = require('./states/month').getMonth;
-const getMinute  = require('./states/minute').getMinute;
-const rangeStartState  = require('./states/range').rangeStartState;
-const rangeEndState  = require('./states/range').rangeEndState;
-const getYear  = require('./states/year').getYear;
+const tokenizeInput = require("./tokens").tokenizeInput;
+const getClockTime = require("./states/clocktime").getClockTime;
+const getDay = require("./states/day").getDay;
+const getFrequencyOnly = require("./states/frequency").getFrequencyOnly;
+const getFrequencyWith = require("./states/frequency").getFrequencyWith;
+const getHour = require("./states/hour").getHour;
+const getMonth = require("./states/month").getMonth;
+const getMinute = require("./states/minute").getMinute;
+const getSecond = require("./states/second").getSecond;
+const rangeStartState = require("./states/range").rangeStartState;
+const rangeEndState = require("./states/range").rangeEndState;
+const getYear = require("./states/year").getYear;
 
 /*callState function to match and call curresponding state function*/
-function callState(token,stack,error) {
+function callState(token, stack, error) {
     let stateName = decideState(token);
 
-    switch(stateName) {
-        case "frequencyWith" : {
-            return getFrequencyWith(token,stack,error);
-        }
-        break;
-        case "frequencyOnly" : {
-            return getFrequencyOnly(token,stack,error);
-        }
-        break;
-        case "clockTime" : {
-            return getClockTime(token,stack,error);
-        }
-        break;
-        case "day" : {
-            return getDay(token,stack,error);
-        }
-        break;
-        case "minute" : {
-            return getMinute(token,stack,error);
-        }
-        break;
-        case "hour" : {
-            return getHour(token,stack,error);
-        }
-        break;
-        case "month" : {
-            return getMonth(token,stack,error);
-        }
-        break;
-        case "year" : {
-            return getYear(token,stack,error);
-        }
-        break;
-        case "rangeStart" : {
-            return rangeStartState(token,stack,error);
-        }
-        break;
-        case "rangeEnd" : {
-            return rangeEndState(token,stack,error);
-        }
-        break;
+    switch (stateName) {
+        case "frequencyWith":
+            {
+                return getFrequencyWith(token, stack, error);
+            }
+            break;
+        case "frequencyOnly":
+            {
+                return getFrequencyOnly(token, stack, error);
+            }
+            break;
+        case "clockTime":
+            {
+                return getClockTime(token, stack, error);
+            }
+            break;
+        case "day":
+            {
+                return getDay(token, stack, error);
+            }
+            break;
+        case "minute":
+            {
+                return getMinute(token, stack, error);
+            }
+            break;
+        case "second":
+            {
+                return getSecond(token, stack, error);
+            }
+            break;
+        case "hour":
+            {
+                return getHour(token, stack, error);
+            }
+            break;
+        case "month":
+            {
+                return getMonth(token, stack, error);
+            }
+            break;
+        case "year":
+            {
+                return getYear(token, stack, error);
+            }
+            break;
+        case "rangeStart":
+            {
+                return rangeStartState(token, stack, error);
+            }
+            break;
+        case "rangeEnd":
+            {
+                return rangeEndState(token, stack, error);
+            }
+            break;
     }
     return true;
 }
@@ -69,10 +85,10 @@ function callState(token,stack,error) {
 /*decideState function to decide next state*/
 function decideState(token) {
     let isFound = "decideState";
-    for(let key in regexString) {
+    for (let key in regexString) {
         // TO DO: check for group
-        let regBuilder = new RegExp(regexString[key].regextest,'ig');
-        if(regBuilder.test(token)) {
+        let regBuilder = new RegExp(regexString[key].regextest, "ig");
+        if (regBuilder.test(token)) {
             isFound = key;
             break;
         }
@@ -83,7 +99,10 @@ function decideState(token) {
 /*getCronString fucntion to convert human readable input string to cron string*/
 module.exports = function getCronString(inputString, syntaxString) {
     //Set default syntax string
-    syntaxString = typeof(syntaxString) !== 'undefined' ? syntaxString : "MIN HOR DOM MON WEK YER";
+    syntaxString =
+        typeof syntaxString !== "undefined"
+            ? syntaxString
+            : "SEC MIN HOR DOM MON WEK YER";
 
     //resetting map values to default
     flags.isRangeForDay = defaultFlags.isRangeForDay;
@@ -91,7 +110,9 @@ module.exports = function getCronString(inputString, syntaxString) {
     flags.isRangeForYear = defaultFlags.isRangeForYear;
     flags.isRangeForHour = defaultFlags.isRangeForHour;
     flags.isRangeForMin = defaultFlags.isRangeForMin;
+    flags.isRangeForSec = defaultFlags.isRangeForSec;
 
+    resultCron.sec = defaultResultCron.sec;
     resultCron.min = defaultResultCron.min;
     resultCron.hour = defaultResultCron.hour;
     resultCron.day_of_month = defaultResultCron.day_of_month;
@@ -104,17 +125,42 @@ module.exports = function getCronString(inputString, syntaxString) {
     let error = "";
     let tokens = tokenizeInput(inputString);
 
-    if(tokens == null) {
-        error+="Please enter human readable rules !\n";
+    if (tokens == null) {
+        error += "Please enter human readable rules !\n";
     }
     let notEndState = true;
-    for(let i=0; notEndState && i<tokens.length;i++) {
-        notEndState = callState(tokens[i],stack,error);
+    for (let i = 0; notEndState && i < tokens.length; i++) {
+        notEndState = callState(tokens[i], stack, error);
     }
-    if(notEndState == false) {
-        return "ERROR:"+error + "\t\t" + syntaxString.replace("MIN",resultCron.min).replace("HOR",resultCron.hour).replace("DOM",resultCron.day_of_month).replace("MON",resultCron.month).replace("WEK",resultCron.day_of_week).replace("YER",resultCron.year);
+
+    if (resultCron.sec == "*") {
+        resultCron.sec = "";
     }
-    else {
-        return syntaxString.replace("MIN",resultCron.min).replace("HOR",resultCron.hour).replace("DOM",resultCron.day_of_month).replace("MON",resultCron.month).replace("WEK",resultCron.day_of_week).replace("YER",resultCron.year);
+
+    if (notEndState == false) {
+        return (
+            "ERROR:" +
+            error +
+            "\t\t" +
+            syntaxString
+                .replace("SEC", resultCron.sec)
+                .replace("MIN", resultCron.min)
+                .replace("HOR", resultCron.hour)
+                .replace("DOM", resultCron.day_of_month)
+                .replace("MON", resultCron.month)
+                .replace("WEK", resultCron.day_of_week)
+                .replace("YER", resultCron.year)
+                .trim()
+        );
+    } else {
+        return syntaxString
+            .replace("SEC", resultCron.sec)
+            .replace("MIN", resultCron.min)
+            .replace("HOR", resultCron.hour)
+            .replace("DOM", resultCron.day_of_month)
+            .replace("MON", resultCron.month)
+            .replace("WEK", resultCron.day_of_week)
+            .replace("YER", resultCron.year)
+            .trim();
     }
-}
+};
